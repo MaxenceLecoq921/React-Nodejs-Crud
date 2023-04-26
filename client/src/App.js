@@ -1,6 +1,6 @@
 import './App.css';
 import {useEffect,useRef,useState} from "react";
-import AccountForm from "./components/AccountForm";
+import AccountForm from "./components/form/AccountForm";
 
 
 function App() {
@@ -125,10 +125,10 @@ function App() {
     useEffect(() => {
         if (actionState === 'add') {
             connect.current.style.display = 'none';
-            create.current.style.display = 'block';
+            create.current.style.display = 'flex';
         } else if (actionState === 'connect') {
             create.current.style.display = 'none';
-            connect.current.style.display = 'block';
+            connect.current.style.display = 'flex';
         }
     }, [actionState]);
 
@@ -142,21 +142,23 @@ function App() {
     }
 
     return (
-        <div>
-            <div ref={create}>
+        <div className={"totalArea"}>
+            <div ref={create} className={"formCreate"}>
                 <p>create :</p>
                 <AccountForm actionClick={setActionStateFunction()} account={account} setAccount={setAccount} actionState={actionState}/>
-                <p onClick={() => {setActionState("connect");setActionStateDisplay();}}>I already have an account.</p>
+                <p className={"changeLink"} onClick={() => {setActionState("connect");setActionStateDisplay();}}>I already have an account.</p>
             </div>
-            <div ref={connect}>
+            <div ref={connect} className={"formConnect"}>
                 <p>connect :</p>
                 <AccountForm actionClick={setActionStateFunction()} account={account} setAccount={setAccount} actionState={actionState}/>
                 <p ref={data}></p>
-                <p onClick={() => {setActionState("add");setActionStateDisplay();}}>I dont have an account.</p>
+                <p className={"changeLink"} onClick={() => {setActionState("add");setActionStateDisplay();}}>I dont have an account.</p>
                 <button onClick={disconnect}>Disconnect</button>
             </div>
-            <p>delete :</p>
-            <AccountForm actionClick={deleteAccount} account={account} setAccount={setAccount} actionState={"delete"}/>
+            <div className={"formDelete"}>
+                <p>delete :</p>
+                <AccountForm actionClick={deleteAccount} account={account} setAccount={setAccount} actionState={"delete"}/>
+            </div>
         </div>
 );
 }

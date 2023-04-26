@@ -1,4 +1,5 @@
 import {useEffect, useRef} from "react";
+import './AccountForm.css';
 
 export default function AccountForm(props){
     //state
@@ -36,13 +37,13 @@ export default function AccountForm(props){
 
     //affichage
     return (
-        <form action="submit" onSubmit={actionClick}>
+        <form className={"form"} action="submit" onSubmit={actionClick}>
             <label>
-                Adresse mail:
+                <p>mail adress :</p>
                 <input type="text" name="mailAdress" value={account.mailAdress} onChange={handleInputChange} />
             </label>
             <label>
-                Mot de passe:
+                <p>password :</p>
                 <input type="password" name="password" value={account.password} onChange={handleInputChange} />
             </label>
             <button ref={button} >Create account</button>
