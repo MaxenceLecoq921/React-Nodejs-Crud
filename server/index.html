@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="indexStyle.css">
+    <title>sign-in</title>
+</head>
+<body>
+<section class="body1">
+    <form method="post" class="sign-in-Box" id="formCreateAccount">
+        <div class="informationbox">
+            <label>adresse-mail</label>
+            <input placeholder="taper-ici" type="text" class="information" id="mailadress">
+        </div>
+        <div class="informationbox">
+            <label>mot-de-passe</label>
+            <input placeholder="taper-ici" type="text" class="information" id="password">
+        </div>
+        <button type="submit" class="sig-in">Creer un compte</button>
+        <a class="changeform" onclick="haveaccount()">je possède deja un compte</a>
+    </form>
+    <form method="post" class="sign-in-Box" id="formlogin">
+        <div class="informationbox">
+            <label>adresse-mail</label>
+            <input placeholder="taper-ici" type="text" class="information" id="mailadress2">
+        </div>
+        <div class="informationbox">
+            <label>mot-de-passe</label>
+            <input placeholder="taper-ici" type="text" class="information" id="password2">
+        </div>
+        <button type="submit" class="sig-in">Se connecter</button>
+        <a class="changeform" onclick="donthaveaccount()">je ne possède pas de compte</a>
+    </form>
+    <a class="disconnect" onclick="disconnect()">se deconnecter</a>
+    <div id="datas2"></div>
+</section>
+<section class="body2">
+    <form method="post" class="deleteAccountForm" id="deleteAccountFormId">
+        <div class="inputboxs">
+            <input placeholder="mail-adress" type="text" class="information2" id="mailadress3">
+            <input placeholder="password" type="text" class="information2" id="password3">
+        </div>
+        <button type="submit" class="deleteAccountButton" id="deleteAccountButtonId">Supprimer mon compte</button>
+    </form>
+</section>
+</body>
+<script>
+    var sign = document.getElementById('formCreateAccount')
+
+    sign.addEventListener('submit',sign_in_function)
+
+    function sign_in_function(e){
+        e.preventDefault();
+        const mailadress = document.getElementById("mailadress").value;
+        const password = document.getElementById("password").value;
+
+
+        const formData = new FormData();
+        formData.append("mailadress", mailadress);
+        formData.append("password", password);
+        const data = Object.fromEntries(formData)
+
+        console.log(mailadress);
+        console.log(password);
+        fetch('http://localhost:8000/users/createAccount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(data => {
+                alert('compte cree')
+            })
+    }
+
+    // CONNECT TO ACCOUNT
+
+    const formConnectToAccount = document.querySelector('#formlogin')
+    formConnectToAccount.addEventListener('submit', (e) => {
+        e.preventDefault()
+        const mailadress = document.getElementById("mailadress2").value;
+        const password = document.getElementById("password2").value;
+
+        const formData = new FormData();
+        formData.append("mailadress", mailadress);
+        formData.append("password", password);
+        const data = Object.fromEntries(formData)
+
+        fetch('http://localhost:8000/users/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then((response) => {
+            return response.json()
+        }).then(data => {
+            let user = JSON.stringify(data)
+            localStorage.setItem('user', user.mail)
+            alert('connexion reussie')
+            displayusersData(data)
+        }).catch(error => {
+            console.log(error)
+        })
+
+    })
+
+    const displayusersData = (data) => {
+        const datas = document.querySelector('#datas2')
+        datas.innerHTML = ''
+        datas.innerHTML +=
+            `<div>
+                    <h3>${data.mail}</h3>
+                </div>`
+    }
+
+
+    // DELETE ACCOUNT
+    const formDeleteAccount = document.querySelector('#deleteAccountFormId')
+    formDeleteAccount.addEventListener('submit', (e) => {
+        e.preventDefault()
+        const mailadress = document.getElementById("mailadress3").value;
+        const password = document.getElementById("password3").value;
+
+        const formData = new FormData();
+        formData.append("mailadress", mailadress);
+        formData.append("password", password);
+        const data = Object.fromEntries(formData)
+
+        fetch('http://localhost:8000/users/deleteAccount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then((response) => {
+            return response.json()
+        }).then(data => {
+            alert('compte supprimé')
+        }).catch(error => {
+            console.log(error)
+        })
+
+    })
+
+    // CHANGER DE MODE POUR SE CONNECTER OU S'INSCRIRE
+
+    function haveaccount(){
+        document.getElementById("formCreateAccount").style.display = "none";
+        document.getElementById("formlogin").style.display = "flex";
+    }
+    function donthaveaccount(){
+        document.getElementById("formCreateAccount").style.display = "flex";
+        document.getElementById("formlogin").style.display = "none";
+    }
+
+    // se deconnecter
+
+    function disconnect(){
+        localStorage.removeItem('user');
+        const datas = document.querySelector('#datas2')
+        datas.innerHTML = ''
+        datas.innerHTML +=
+            `<div>
+                    <h3></h3>
+                </div>`
+    }
+
+
+</script>
+</html>
